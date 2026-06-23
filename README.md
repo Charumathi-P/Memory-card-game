@@ -1,108 +1,105 @@
-const gameBoard = document.getElementById("gameBoard");
-const timerDisplay = document.getElementById("timer");
-const scoreDisplay = document.getElementById("score");
-const restartBtn = document.getElementById("restart");
+# 🃏 Memory Card Game
 
-const symbols = ["🍎","🍌","🍇","🍒","🍉","🥝","🍍","🍓"];
+A fun and interactive Memory Card Matching Game developed using HTML, CSS, and JavaScript.
 
-let cards = [...symbols, ...symbols];
-let flippedCards = [];
-let matchedPairs = 0;
-let score = 0;
-let timer = 0;
-let interval;
+## 🎮 Features
 
-function shuffleCards() {
-    cards.sort(() => Math.random() - 0.5);
-}
+* 🃏 Flip cards to reveal symbols
+* ✅ Match pairs of cards
+* ⏱️ Timer to track gameplay duration
+* 🏆 Score system
+* 🔄 Restart game option
+* 📱 Responsive design
 
-function startTimer() {
-    clearInterval(interval);
-    timer = 0;
-    timerDisplay.textContent = timer;
+## 🚀 Technologies Used
 
-    interval = setInterval(() => {
-        timer++;
-        timerDisplay.textContent = timer;
-    }, 1000);
-}
+* HTML5
+* CSS3
+* JavaScript (ES6)
 
-function createBoard() {
-    gameBoard.innerHTML = "";
-    shuffleCards();
+## 📸 Screenshots
 
-    cards.forEach(symbol => {
-        const card = document.createElement("div");
-        card.classList.add("card");
-        card.dataset.symbol = symbol;
-        card.textContent = symbol;
+Add screenshots of your game inside the `screenshots` folder.
 
-        card.addEventListener("click", flipCard);
+Example:
 
-        gameBoard.appendChild(card);
-    });
-}
+```text
+screenshots/
+├── home.png
+├── gameplay.png
+└── result.png
+```
 
-function flipCard() {
-    if (
-        this.classList.contains("flip") ||
-        this.classList.contains("matched") ||
-        flippedCards.length === 2
-    ) {
-        return;
-    }
+## 🎯 How to Play
 
-    this.classList.add("flip");
-    flippedCards.push(this);
+1. Click on a card to flip it.
+2. Flip another card to find its matching pair.
+3. If both cards match, they remain open.
+4. If they don't match, they flip back.
+5. Match all pairs before the timer runs out.
+6. Achieve the highest score possible.
 
-    if (flippedCards.length === 2) {
-        checkMatch();
-    }
-}
+## 🛠️ Installation
 
-function checkMatch() {
-    const [card1, card2] = flippedCards;
+Clone the repository:
 
-    if (card1.dataset.symbol === card2.dataset.symbol) {
-        card1.classList.add("matched");
-        card2.classList.add("matched");
+```bash
+git clone https://github.com/your-username/memory-card-game.git
+```
 
-        matchedPairs++;
-        score += 10;
-        scoreDisplay.textContent = score;
+Navigate to the project folder:
 
-        flippedCards = [];
+```bash
+cd memory-card-game
+```
 
-        if (matchedPairs === symbols.length) {
-            clearInterval(interval);
+Open `index.html` in your browser.
 
-            setTimeout(() => {
-                alert(
-                    `🎉 You Won!\nScore: ${score}\nTime: ${timer} seconds`
-                );
-            }, 500);
-        }
-    } else {
-        setTimeout(() => {
-            card1.classList.remove("flip");
-            card2.classList.remove("flip");
-            flippedCards = [];
-        }, 1000);
-    }
-}
+## 📂 Project Structure
 
-function restartGame() {
-    matchedPairs = 0;
-    score = 0;
-    flippedCards = [];
+```text
+memory-card-game/
+│
+├── index.html
+├── style.css
+├── script.js
+├── screenshots/
+│   ├── home.png
+│   ├── gameplay.png
+│   └── result.png
+│
+├── README.md
+└── LICENSE
+```
 
-    scoreDisplay.textContent = score;
+## 📄 License
 
-    createBoard();
-    startTimer();
-}
+This project is open source and available under the MIT License.
 
-restartBtn.addEventListener("click", restartGame);
+## ⭐ Portfolio Value
 
-createBoard();
-startTimer();
+This project demonstrates:
+
+* DOM Manipulation
+* Event Handling
+* Game Logic Development
+* JavaScript Functions
+* Responsive UI Design
+* Problem Solving Skills
+
+## 📌 GitHub Commit Names
+
+* Initial project setup
+* Add card flip functionality
+* Implement matching logic
+* Add timer feature
+* Create scoring system
+* Improve UI design
+* Add responsive layout
+* Update README documentation
+* Final project deployment
+
+## 🙌 Author
+
+Developed using HTML, CSS, and JavaScript as a beginner-friendly web development project.
+
