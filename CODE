@@ -1,108 +1,236 @@
-const gameBoard = document.getElementById("gameBoard");
-const timerDisplay = document.getElementById("timer");
-const scoreDisplay = document.getElementById("score");
-const restartBtn = document.getElementById("restart");
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Card Game</title>
 
-const symbols = ["🍎","🍌","🍇","🍒","🍉","🥝","🍍","🍓"];
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:Arial, sans-serif;
+        }
 
-let cards = [...symbols, ...symbols];
+        body{
+            background:#0f172a;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            min-height:100vh;
+            color:white;
+        }
+
+        .container{
+            text-align:center;
+            max-width:500px;
+        }
+
+        h1{
+            margin-bottom:20px;
+        }
+
+        .info{
+            display:flex;
+            justify-content:space-between;
+            margin-bottom:15px;
+            font-size:18px;
+        }
+
+        button{
+            padding:10px 20px;
+            border:none;
+            background:#22c55e;
+            color:white;
+            border-radius:5px;
+            cursor:pointer;
+            margin-bottom:20px;
+        }
+
+        button:hover{
+            background:#16a34a;
+        }
+
+        .game-board{
+            display:grid;
+            grid-template-columns:repeat(4,90px);
+            gap:10px;
+        }
+
+        .card{
+            width:90px;
+            height:90px;
+            background:#334155;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            font-size:35px;
+            border-radius:10px;
+            cursor:pointer;
+            color:transparent;
+            transition:0.3s;
+        }
+
+        .card.flipped{
+            background:#38bdf8;
+            color:white;
+        }
+
+        .card.matched{
+            background:#22c55e;
+            color:white;
+        }
+
+        @media(max-width:500px){
+            .game-board{
+                grid-template-columns:repeat(4,70px);
+            }
+
+            .card{
+                width:70px;
+                height:70px;
+                font-size:28px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🃏 Memory Card Game</h1>
+
+    <div class="info">
+        <div>⏱ Time: <span id="timer">0</span>s</div>
+        <div>🏆 Score: <span id="score">0</span></div>
+    </div>
+
+    <button onclick="restartGame()">🔄 Restart Game</button>
+
+    <div class="game-board" id="gameBoard"></div>
+</div>
+
+<script>
+const symbols = [
+    "🍎","🍌","🍇","🍒",
+    "🍎","🍌","🍇","🍒",
+    "🍉","🥝","🍍","🍓",
+    "🍉","🥝","🍍","🍓"
+];
+
 let flippedCards = [];
 let matchedPairs = 0;
 let score = 0;
-let timer = 0;
-let interval;
+let time = 0;
+let timer;
 
-function shuffleCards() {
-    cards.sort(() => Math.random() - 0.5);
+const board = document.getElementById("gameBoard");
+const scoreDisplay = document.getElementById("score");
+const timerDisplay = document.getElementById("timer");
+
+function shuffle(array){
+    for(let i=array.length-1;i>0;i--){
+        const j=Math.floor(Math.random()*(i+1));
+        [array[i],array[j]]=[array[j],array[i]];
+    }
 }
 
-function startTimer() {
-    clearInterval(interval);
-    timer = 0;
-    timerDisplay.textContent = timer;
+function startTimer(){
+    clearInterval(timer);
+    time = 0;
+    timerDisplay.textContent = time;
 
-    interval = setInterval(() => {
-        timer++;
-        timerDisplay.textContent = timer;
-    }, 1000);
+    timer = setInterval(()=>{
+        time++;
+        timerDisplay.textContent = time;
+    },1000);
 }
 
-function createBoard() {
-    gameBoard.innerHTML = "";
-    shuffleCards();
+function createBoard(){
+    board.innerHTML = "";
+    shuffle(symbols);
 
-    cards.forEach(symbol => {
-        const card = document.createElement("div");
+    symbols.forEach(symbol=>{
+        const card=document.createElement("div");
         card.classList.add("card");
-        card.dataset.symbol = symbol;
-        card.textContent = symbol;
+        card.dataset.symbol=symbol;
+        card.innerHTML=symbol;
 
-        card.addEventListener("click", flipCard);
-
-        gameBoard.appendChild(card);
+        card.addEventListener("click",flipCard);
+        board.appendChild(card);
     });
 }
 
-function flipCard() {
-    if (
-        this.classList.contains("flip") ||
+function flipCard(){
+    if(
+        this.classList.contains("flipped") ||
         this.classList.contains("matched") ||
-        flippedCards.length === 2
-    ) {
+        flippedCards.length===2
+    ){
         return;
     }
 
-    this.classList.add("flip");
+    this.classList.add("flipped");
     flippedCards.push(this);
 
-    if (flippedCards.length === 2) {
+    if(flippedCards.length===2){
         checkMatch();
     }
 }
 
-function checkMatch() {
-    const [card1, card2] = flippedCards;
+function checkMatch(){
+    const [card1,card2]=flippedCards;
 
-    if (card1.dataset.symbol === card2.dataset.symbol) {
+    if(card1.dataset.symbol===card2.dataset.symbol){
+
         card1.classList.add("matched");
         card2.classList.add("matched");
 
         matchedPairs++;
         score += 10;
-        scoreDisplay.textContent = score;
 
-        flippedCards = [];
+        scoreDisplay.textContent=score;
+        flippedCards=[];
 
-        if (matchedPairs === symbols.length) {
-            clearInterval(interval);
+        if(matchedPairs===8){
+            clearInterval(timer);
 
-            setTimeout(() => {
+            setTimeout(()=>{
                 alert(
-                    `🎉 You Won!\nScore: ${score}\nTime: ${timer} seconds`
+                    "🎉 Congratulations!\n\nScore: "
+                    + score +
+                    "\nTime: " +
+                    time +
+                    " seconds"
                 );
-            }, 500);
+            },500);
         }
-    } else {
-        setTimeout(() => {
-            card1.classList.remove("flip");
-            card2.classList.remove("flip");
-            flippedCards = [];
-        }, 1000);
+
+    }else{
+
+        setTimeout(()=>{
+            card1.classList.remove("flipped");
+            card2.classList.remove("flipped");
+            flippedCards=[];
+        },1000);
+
     }
 }
 
-function restartGame() {
-    matchedPairs = 0;
-    score = 0;
-    flippedCards = [];
+function restartGame(){
+    flippedCards=[];
+    matchedPairs=0;
+    score=0;
 
-    scoreDisplay.textContent = score;
+    scoreDisplay.textContent=0;
 
     createBoard();
     startTimer();
 }
 
-restartBtn.addEventListener("click", restartGame);
-
 createBoard();
 startTimer();
+</script>
+
+</body>
+</html>
